@@ -1,0 +1,10 @@
+{
+    "__default__" :
+    {
+        "time" : "01:00:00",
+        "cores" : "{threads}",
+        "partition" : "wjg,biochem,sfgf",
+        "priority" : "normal",
+        "memory" : "8G"
+    }
+}
