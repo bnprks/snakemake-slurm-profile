@@ -1,5 +1,5 @@
 cluster: "slurm-submit.py"
-cluster-config: "cluster.json"
+cluster-config: "PROFILE_DIR/cluster.json"
 cluster-status: "slurm-status.py"
 
 jobs: 100

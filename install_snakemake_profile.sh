@@ -7,4 +7,6 @@
 PROFILE_DIR=$HOME/.config/snakemake/slurm
 
 mkdir -p $PROFILE_DIR
-cp cluster.json config.yaml slurm-status.py slurm-submit.py $PROFILE_DIR
+cp cluster.json slurm-status.py slurm-submit.py $PROFILE_DIR
+chmod u+x $PROFILE_DIR/slurm-status.py $PROFILE_DIR/slurm-submit.py
+sed "s@PROFILE_DIR@$PROFILE_DIR@g" config.yaml > $PROFILE_DIR/config.yaml 
