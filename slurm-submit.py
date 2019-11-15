@@ -5,11 +5,14 @@
 # under their params directive in order to overwrite the sbatch parameters. 
 
 # Notes:
-#    - All slurm command logs are written to the folder slurm-logs/{job_name} under the working directory
+#    - All slurm command logs are written to the folder .slurm-logs/{job_name} under the working directory
 #    - The jobscript will echo the sbatch command to the snakemake log
 
 import os
+import shutil
+import subprocess
 import sys
+
 from snakemake.utils import read_job_properties
 
 
@@ -36,11 +39,13 @@ def file_escape(string):
     return string.replace("/", "_").replace(" ", "_")
 
 if job_properties["type"] == "single":
-    submission_params["job_name"] = "snake." + job_properties["rule"] + "." + ".".join([key + "=" + file_escape(value) for key,value in job_properties["wildcards"].items()])
-    submission_params["log_dir"] = os.path.join(workingdir, "slurm-logs", job_properties["rule"])
+    submission_params["job_name"] = "snake." + job_properties["rule"] 
+    if len(job_properties["wildcards"] > 0):
+        submission_params["job_name"] += "." + ".".join([key + "=" + file_escape(value) for key,value in job_properties["wildcards"].items()])
+    submission_params["log_dir"] = os.path.join(workingdir, ".slurm-logs", job_properties["rule"])
 elif job_properties["type"] == "group":
     submission_params["job_name"] = "snake." + job_properties["groupid"]
-    submission_params["log_dir"] = os.path.join(workingdir, "slurm-logs", job_properties["groupid"])
+    submission_params["log_dir"] = os.path.join(workingdir, ".slurm-logs", job_properties["groupid"])
 else:
     print("Error: slurm-submit.py doesn't support job type {} yet!".format(job_properties["type"]))
     sys.exit(1)
@@ -50,5 +55,14 @@ else:
 os.makedirs(submission_params["log_dir"], exist_ok=True)
 
 submit_string = "sbatch --job-name={job_name} -p {partition} -c {cores}  -t {time} --mem {memory} --qos {priority} --parsable -o {log_dir}/{job_name}.%j.out -e {log_dir}/{job_name}.%j.err {jobscript}".format(**submission_params)
-# print("sbatch command: " + submit_string, file=sys.stderr)
-os.system(submit_string)
+
+result = subprocess.run(submit_string, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+sys.stdout.write(result.stdout.decode())
+
+if len(result.stderr) > 0:
+    sys.stderr.write(result.stderr.decode())
+
+# Copy jobscript to slurm-logs dir
+# script_log = os.path.join(submission_params["log_dir"], submission_params["job_name"] + "." + result.stdout.strip().decode() + ".sbatch") 
+# shutil.copy(submission_params["jobscript"], script_log)

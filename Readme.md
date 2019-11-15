@@ -27,13 +27,13 @@ If you have a snakemake rule that needs more time, memory, or cores than the def
 # Accessing logs
 
 Log records containing the outputs of all submitted slurm jobs are saved in your snakemake working directory as follows:
-- Standard out: `slurm-logs/{rule_name}/snake.{wildcard_values}.{jobid}.out`
-- Standard error: `slurm-logs/{rule_name}/snake.{wildcard_values}.{jobid}.err`
+- Standard out: `.slurm-logs/{rule_name}/snake.{wildcard_values}.{jobid}.out`
+- Standard error: `.slurm-logs/{rule_name}/snake.{wildcard_values}.{jobid}.err`
 
 Usually, I end up wanting to look at logs from a specific jobid that I know crashed. In this case it is tedious to type out the rule name and wildcard values. Instead, for example if job `54085154` crashed I will run:
 ```
-less slurm-logs/*/*54085154.out
-less slurm-logs/*/*54085154.err
+less .slurm-logs/*/*54085154.out
+less .slurm-logs/*/*54085154.err
 ```
 
 ## Credits
