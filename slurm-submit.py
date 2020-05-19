@@ -40,7 +40,7 @@ def file_escape(string):
 
 if job_properties["type"] == "single":
     submission_params["job_name"] = "snake." + job_properties["rule"] 
-    if len(job_properties["wildcards"] > 0):
+    if len(job_properties["wildcards"]) > 0:
         submission_params["job_name"] += "." + ".".join([key + "=" + file_escape(value) for key,value in job_properties["wildcards"].items()])
     submission_params["log_dir"] = os.path.join(workingdir, ".slurm-logs", job_properties["rule"])
 elif job_properties["type"] == "group":
